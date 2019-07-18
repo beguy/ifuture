@@ -18,7 +18,9 @@ public class AccountController {
 
     @GetMapping("/{id}/amount")
     public ResponseEntity<Long> getAmount(@PathVariable Integer id){
-        return ResponseEntity.ok(accountService.getAmount(id));
+        Long amount = accountService.getAmount(id);
+        if (amount == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(amount);
     }
 
     @PostMapping("/{id}/amount")
