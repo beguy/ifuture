@@ -4,7 +4,8 @@ import com.github.beguy.ifuture_server.model.Account;
 import com.github.beguy.ifuture_server.repository.AccountRepository;
 import com.github.beguy.ifuture_server.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,9 +21,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Cacheable("amounts")
     @Transactional(readOnly = true)
-// TODO: enable caching
-//    @Cacheable("amounts")
     public Long getAmount(Integer id) {
         return accountRepository.findById(id)
                 .map(Account::getAmount)
@@ -31,7 +31,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    @CachePut(value="amounts", key = "#id")
+    @CacheEvict(value = "amounts", key = "#id")
     public void addAmount(Integer id, Long value) {
         Optional<Account> accountOptional = accountRepository.findById(id);
         accountOptional.ifPresent(account -> {
