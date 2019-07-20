@@ -1,6 +1,6 @@
-package com.github.beguy.ifuture_server.mbean.impl;
+package com.github.beguy.ifuture_server.aspect.methodsCallProfiler.impl.keyCounter.impl;
 
-import com.github.beguy.ifuture_server.mbean.KeyCounterPerUnitTime;
+import com.github.beguy.ifuture_server.aspect.methodsCallProfiler.impl.keyCounter.KeyCountersPerUnitTime;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Component
 @Lazy
-public class LongKeyCounterPerUnitTimeImpl<KeyType> implements KeyCounterPerUnitTime<KeyType, Long> {
+public class LongKeyCountersPerUnitTimeImpl<KeyType> implements KeyCountersPerUnitTime<KeyType, Long> {
     private Map<KeyType, Counter> counters = new HashMap<>();
     private long commonUnitTimeMillis = 1000; // Milliseconds
 
@@ -46,8 +46,8 @@ public class LongKeyCounterPerUnitTimeImpl<KeyType> implements KeyCounterPerUnit
     }
 
     @Override
-    public void incrementByKeyNumber(long keyNumer) {
-        getCounterByNumber(keyNumer).increment();
+    public void incrementByKeyNumber(long keyNumber) {
+        getCounterByNumber(keyNumber).increment();
     }
 
     @Override
@@ -61,8 +61,8 @@ public class LongKeyCounterPerUnitTimeImpl<KeyType> implements KeyCounterPerUnit
     }
 
     @Override
-    public Long getValueByKeyNumber(long key) {
-        return getCounterByNumber(key).getCurrentValue();
+    public Long getValueByKeyNumber(long keyNumber) {
+        return getCounterByNumber(keyNumber).getCurrentValue();
     }
 
     @Override
@@ -71,8 +71,8 @@ public class LongKeyCounterPerUnitTimeImpl<KeyType> implements KeyCounterPerUnit
     }
 
     @Override
-    public void resetByKeyNumber(long key) {
-        getCounterByNumber(key).reset();
+    public void resetByKeyNumber(long keyNumber) {
+        getCounterByNumber(keyNumber).reset();
     }
 
     @Override

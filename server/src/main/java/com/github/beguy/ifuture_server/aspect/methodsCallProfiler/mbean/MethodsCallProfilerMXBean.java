@@ -1,8 +1,10 @@
-package com.github.beguy.ifuture_server.mbean;
+package com.github.beguy.ifuture_server.aspect.methodsCallProfiler.mbean;
+
+import com.github.beguy.ifuture_server.aspect.Switchable;
 
 import java.util.Set;
 
-public interface ServiceLoadProfilerMXBean {
+public interface MethodsCallProfilerMXBean extends Switchable {
     Set<String> getMethodsNames();
 
     long getUnitTime();

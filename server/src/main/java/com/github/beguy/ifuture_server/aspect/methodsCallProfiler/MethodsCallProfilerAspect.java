@@ -1,30 +1,28 @@
-package com.github.beguy.ifuture_server.aspect;
+package com.github.beguy.ifuture_server.aspect.methodsCallProfiler;
 
-import com.github.beguy.ifuture_server.mbean.KeyCounter;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.github.beguy.ifuture_server.aspect.Switchable;
+import com.github.beguy.ifuture_server.aspect.methodsCallProfiler.mbean.MethodsCallProfilerMXBean;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
 @Aspect
 @Configuration
-public class ServiceLoadProfilerAspect implements Switchable {
-    private final static Log log = LogFactory.getLog(ServiceLoadProfilerAspect.class);
-    private boolean enabled = false;
-
-    private final KeyCounter<String, Long> profilerCounter;
+public class MethodsCallProfilerAspect {
+    private final Switchable profilerState;
+    private final MethodsCallCounters methodsCallCounters;
 
     @Autowired
-    @Lazy
-    public ServiceLoadProfilerAspect(@Qualifier("serviceLoadProfiler") KeyCounter<String, Long> profilerCounter) {
-        this.profilerCounter = profilerCounter;
+    public MethodsCallProfilerAspect(MethodsCallProfilerMXBean profilerMXbean,
+                                     @Lazy MethodsCallCounters methodsCallCounters) {
+        this.profilerState = profilerMXbean;
+        this.methodsCallCounters = methodsCallCounters;
     }
+
 
     @Pointcut("execution(void com.github.beguy.ifuture_server.service.AccountService.addAmount(..)) ||" +
             "execution(Long com.github.beguy.ifuture_server.service.AccountService.getAmount(..)) ")
@@ -34,20 +32,10 @@ public class ServiceLoadProfilerAspect implements Switchable {
     @Around("serviceMethod()")
     public Object logWebServiceCall(ProceedingJoinPoint thisJoinPoint) throws Throwable {
         Object result = thisJoinPoint.proceed();
-        if (isEnabled()) {
+        if (profilerState.isEnabled()) {
             String methodName = thisJoinPoint.getSignature().toString();
-            profilerCounter.increment(methodName);
+            methodsCallCounters.increment(methodName);
         }
         return result;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 }

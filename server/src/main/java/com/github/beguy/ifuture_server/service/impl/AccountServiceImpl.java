@@ -1,7 +1,8 @@
-package com.github.beguy.ifuture_server.service;
+package com.github.beguy.ifuture_server.service.impl;
 
 import com.github.beguy.ifuture_server.model.Account;
 import com.github.beguy.ifuture_server.repository.AccountRepository;
+import com.github.beguy.ifuture_server.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
@@ -11,8 +12,12 @@ import java.util.Optional;
 
 @Service
 public class AccountServiceImpl implements AccountService {
+    private final AccountRepository accountRepository;
+
     @Autowired
-    AccountRepository accountRepository;
+    public AccountServiceImpl(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
 
     @Override
     @Transactional(readOnly = true)
