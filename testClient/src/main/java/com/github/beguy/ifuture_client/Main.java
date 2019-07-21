@@ -42,7 +42,7 @@ public class Main {
     private static List<Integer> idList = Collections.emptyList();
     private static Integer rCount = null;
     private static Integer wCount = null;
-    private static Integer writerValue = 1;
+    private static final Integer writerValue = 1;
     private static URL serverHttpAddress;
 
     public static void main(String[] args) {
@@ -109,10 +109,9 @@ public class Main {
                         .map(MatchResult::group)
                         .map(Integer::valueOf)
                         .collect(Collectors.toList());
-                if (idList.get(0).equals(idList.get(1))) throw new ParseException("equal idRange");
                 log.config(() ->
                         "Ids: " + idList.stream()
-                                .map(i -> i.toString())
+                                .map(Object::toString)
                                 .collect(Collectors.joining(", "))
                 );
             } else {
@@ -159,7 +158,7 @@ public class Main {
     }
 
     private static class readerClient implements Runnable {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+        final CloseableHttpClient httpClient = HttpClients.createDefault();
 
         private void doGetAmount(Integer id) {
             HttpGet request = new HttpGet(serverHttpAddress.toString().replaceFirst("%id", id.toString()));
@@ -175,16 +174,17 @@ public class Main {
         @Override
         public void run() {
             idList.forEach(this::doGetAmount);
-            IntStream.range(idRangeStart, ++idRangeStop).forEach(this::doGetAmount);
+            if (idRangeStart != idRangeStop)
+                IntStream.rangeClosed(idRangeStart, idRangeStop).forEach(this::doGetAmount);
         }
     }
 
     private static class writerClient implements Runnable {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+        final CloseableHttpClient httpClient = HttpClients.createDefault();
 
         private void doPostAmount(Integer id, Integer value) {
             HttpPost httpPost = new HttpPost(serverHttpAddress.toString().replaceFirst("%id", id.toString()));
-            List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+            List<NameValuePair> nvps = new ArrayList<>();
             nvps.add(new BasicNameValuePair("value", value.toString()));
             try {
                 httpPost.setEntity(new UrlEncodedFormEntity(nvps));
@@ -203,7 +203,8 @@ public class Main {
         @Override
         public void run() {
             idList.forEach(id -> doPostAmount(id, writerValue));
-            IntStream.range(idRangeStart, ++idRangeStop).forEach(id -> doPostAmount(id, writerValue));
+            if (idRangeStart != idRangeStop)
+                IntStream.rangeClosed(idRangeStart, idRangeStop).forEach(id -> doPostAmount(id, writerValue));
         }
     }
 }
