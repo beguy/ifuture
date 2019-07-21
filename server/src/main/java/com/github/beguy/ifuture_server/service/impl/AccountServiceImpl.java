@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -30,7 +31,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation= Isolation.READ_UNCOMMITTED)
     @CacheEvict(value = "amounts", key = "#id")
     public void addAmount(Integer id, Long value) {
         Optional<Account> accountOptional = accountRepository.findById(id);
