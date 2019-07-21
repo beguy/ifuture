@@ -24,12 +24,12 @@ public class MethodsCallProfilerAspect {
     }
 
 
-    @Pointcut("execution(void com.github.beguy.ifuture_server.service.AccountService.addAmount(..)) ||" +
-            "execution(Long com.github.beguy.ifuture_server.service.AccountService.getAmount(..)) ")
-    private void serviceMethod() {
+    @Pointcut("execution(* com.github.beguy.ifuture_server.controller.AccountController.addAmount(..)) ||" +
+            "execution(* com.github.beguy.ifuture_server.controller.AccountController.getAmount(..)) ")
+    private void requestMethod() {
     }
 
-    @Around("serviceMethod()")
+    @Around("requestMethod()")
     public Object logWebServiceCall(ProceedingJoinPoint thisJoinPoint) throws Throwable {
         Object result = thisJoinPoint.proceed();
         if (profilerState.isEnabled()) {

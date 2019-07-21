@@ -17,15 +17,15 @@ public interface MethodsCallProfilerMXBean extends Switchable {
 
     Long getNumberOfRequestsFromAllUsers(String methodName);
 
-    Long getNumberOfRequestsFromAllUsers(long methodNumber);
+    Long getNumberOfRequestsFromAllUsers(int methodNumber);
 
     boolean clearNumberOfRequests(String methodName);
 
-    boolean clearNumberOfRequests(Long methodNumber);
+    boolean clearNumberOfRequests(Integer methodNumber);
 
     String writeToLog(String methodName);
 
-    String writeToLog(long methodName);
+    String writeToLog(int methodName);
 
     String writeToLogAll();
 }

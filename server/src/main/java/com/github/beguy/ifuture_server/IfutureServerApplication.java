@@ -7,7 +7,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @SpringBootApplication
 @EnableAspectJAutoProxy
-@EnableCaching(proxyTargetClass = true)
+@EnableCaching
 public class IfutureServerApplication {
     public static void main(String[] args) {
         SpringApplication.run(IfutureServerApplication.class, args);

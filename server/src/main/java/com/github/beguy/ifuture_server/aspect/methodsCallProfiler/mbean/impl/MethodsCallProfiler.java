@@ -85,7 +85,7 @@ public class MethodsCallProfiler implements MethodsCallProfilerMXBean {
     }
 
     @Override
-    public Long getNumberOfRequestsFromAllUsers(long methodNumber) {
+    public Long getNumberOfRequestsFromAllUsers(int methodNumber) {
         return methodsCallCounters.getValueByKeyNumber(methodNumber);
     }
 
@@ -97,7 +97,7 @@ public class MethodsCallProfiler implements MethodsCallProfilerMXBean {
     }
 
     @Override
-    public boolean clearNumberOfRequests(Long methodNumber) {
+    public boolean clearNumberOfRequests(Integer methodNumber) {
         methodsCallCounters.resetByKeyNumber(methodNumber);
         return true;
     }
@@ -115,7 +115,7 @@ public class MethodsCallProfiler implements MethodsCallProfilerMXBean {
 
     @Override
     @ManagedOperation
-    public String writeToLog(long methodNumber) {
+    public String writeToLog(int methodNumber) {
         String msg = String.format("Method %s\n have number of requests from all clients = %d" +
                         "\n have number of requests processed on the server = %d per unit time = %d[milliseconds]\n",
                 methodsCallCounters.getKey(methodNumber), getNumberOfRequestsFromAllUsers(methodNumber),

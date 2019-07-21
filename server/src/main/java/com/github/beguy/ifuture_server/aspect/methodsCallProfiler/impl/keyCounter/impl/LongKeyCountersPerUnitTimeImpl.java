@@ -46,7 +46,7 @@ public class LongKeyCountersPerUnitTimeImpl<KeyType> implements KeyCountersPerUn
     }
 
     @Override
-    public void incrementByKeyNumber(long keyNumber) {
+    public void incrementByKeyNumber(int keyNumber) {
         getCounterByNumber(keyNumber).increment();
     }
 
@@ -61,7 +61,7 @@ public class LongKeyCountersPerUnitTimeImpl<KeyType> implements KeyCountersPerUn
     }
 
     @Override
-    public Long getValueByKeyNumber(long keyNumber) {
+    public Long getValueByKeyNumber(int keyNumber) {
         return getCounterByNumber(keyNumber).getCurrentValue();
     }
 
@@ -71,13 +71,13 @@ public class LongKeyCountersPerUnitTimeImpl<KeyType> implements KeyCountersPerUn
     }
 
     @Override
-    public void resetByKeyNumber(long keyNumber) {
+    public void resetByKeyNumber(int keyNumber) {
         getCounterByNumber(keyNumber).reset();
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public KeyType getKey(long keyNumber) {
+    public KeyType getKey(int keyNumber) {
         if (counters.keySet().size() > keyNumber) {
             return (KeyType) counters.keySet().toArray()[(int) keyNumber];
         } else throw new IllegalArgumentException("Not found method with index " + keyNumber);

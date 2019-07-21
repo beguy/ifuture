@@ -5,17 +5,17 @@ import java.util.Set;
 public interface KeyCounters<KeyType, CounterType extends Number> {
     void increment(KeyType key);
 
-    void incrementByKeyNumber(long keyNumber);
+    void incrementByKeyNumber(int keyNumber);
 
     CounterType getValue(KeyType key);
 
-    CounterType getValueByKeyNumber(long keyNumber);
+    CounterType getValueByKeyNumber(int keyNumber);
 
     void reset(KeyType key);
 
-    void resetByKeyNumber(long keyNumber);
+    void resetByKeyNumber(int keyNumber);
 
-    KeyType getKey(long keyNumber);
+    KeyType getKey(int keyNumber);
 
     Set<KeyType> keySet();
 }
