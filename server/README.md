@@ -1,6 +1,6 @@
-------------------------------------------------------------------------------------------------------
-1. Create a service with the following interface:
-------------------------------------------------------------------------------------------------------
+# Task
+
+## 1. Create a service with the following interface:
 ```java
 public interface AccountService
 {
@@ -25,8 +25,7 @@ or generate Exceptions if operation failed.
 You can use any of protocols as a transport layer such as: RMI, Hessian, HTTP
 
 ------------------------------------------------------------------------------------------------------
-3. Receive request processing statistics from the AccountService server
-------------------------------------------------------------------------------------------------------
+## 3. Receive request processing statistics from the AccountService server
 For each of the two AccountService methods (getAmount, addAmount) you need to receive
 - number of requests processed on the server per unit time (!!! not on the client)
 - total number of requests from all clients

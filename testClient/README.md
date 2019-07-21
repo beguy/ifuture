@@ -1,3 +1,5 @@
+# Task
+
 The test client should be able to launch several concurrent streams on a defined subset of identifiers
 - rCount – number of readers requesting the getAmount(id) method
 - wCount – number of readers requesting the addAmount(id,value) method
