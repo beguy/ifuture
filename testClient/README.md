@@ -1,3 +1,5 @@
+Default writers add value==1
+
 # Task
 
 The test client should be able to launch several concurrent streams on a defined subset of identifiers

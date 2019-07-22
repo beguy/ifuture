@@ -1,5 +1,6 @@
-# Task
+HTTP Spring MVC app with Aspect and MBean.
 
+# Task
 ## 1. Create a service with the following interface:
 ```java
 public interface AccountService
