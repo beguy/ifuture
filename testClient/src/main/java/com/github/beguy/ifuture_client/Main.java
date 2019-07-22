@@ -18,6 +18,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -25,6 +26,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
@@ -65,35 +67,71 @@ public class Main {
         }
     }
 
-    private static ExecutorService execute(Runnable runnable, Integer threads) {
-        ExecutorService service = Executors.newFixedThreadPool(threads);
-        for (int i = 0; i < threads; ++i) service.execute(runnable);
-        return service;
+    private static void printHelp(Options options) {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("testClient [options] [server http target with %id]", options);
+    }
+
+    private static Options getCliOptions() {
+        Options options = new Options();
+        options.addOption(Option.builder()
+                .longOpt("rCount")
+                .hasArg().type(int.class)
+                .desc("Number of readers requesting the getAmount(id) method").build());
+        options.addOption(Option.builder()
+                .longOpt("wCount")
+                .hasArg().type(int.class)
+                .desc("Number of readers requesting the addAmount(id,value) method").build());
+        options.addOption(Option.builder("id")
+                .longOpt("idList")
+                .hasArg().type(String.class).argName("\"[1,3]\" or \"1,13,2\"")
+                .desc("List or idRange of keys that will be used for testing like: \"[1,3]\" or list ids: \"1,2,3,4\"").build());
+        options.addOption(Option.builder()
+                .longOpt("file")
+                .hasArg().type(String.class)
+                .desc("List or idRange of keys that will be used for testing").build());
+        options.addOption(Option.builder("h")
+                .longOpt("help")
+                .desc("This help").build());
+        return options;
     }
 
     private static void parseCli(String[] args, Options options) throws ParseException {
         CommandLineParser parser = new DefaultParser();
         CommandLine line = parser.parse(options, args);
+        Properties fileProperties = null;
 
         if (line.hasOption("help")) {
             printHelp(options);
+            return;
         }
 
-        if (line.hasOption("rCount")) {
-            String optionValue = line.getOptionValue("rCount");
+        if (line.hasOption("file")) {
+            String optionValue = line.getOptionValue("file");
+            try (FileInputStream fis = new FileInputStream(optionValue)) {
+                log.config("read args from  property file");
+                fileProperties = new Properties();
+                fileProperties.load(fis);
+            } catch (Exception e) {
+                log.warning(e.getMessage());
+            }
+        }
+
+        if (line.hasOption("rCount") || fileProperties.containsKey("rCount")) {
+            String optionValue = fileProperties.getProperty("rCount", line.getOptionValue("rCount"));
             rCount = Integer.valueOf(optionValue);
             log.config(() -> "rCount: " + Integer.valueOf(optionValue));
         }
 
-        if (line.hasOption("wCount")) {
-            String optionValue = line.getOptionValue("wCount");
+        if (line.hasOption("wCount") || fileProperties.containsKey("wCount")) {
+            String optionValue = fileProperties.getProperty("wCount", line.getOptionValue("wCount"));
             wCount = Integer.valueOf(optionValue);
             log.config(() -> "wCount: " + Integer.valueOf(optionValue));
         }
         if (rCount == null && wCount == null) throw new ParseException("rCount or wCount required");
 
-        if (line.hasOption("idList")) {
-            String optionValue = line.getOptionValue("idList");
+        if (line.hasOption("idList") || fileProperties.containsKey("idList")) {
+            String optionValue = fileProperties.getProperty("idList", line.getOptionValue("idList"));
             if (Pattern.matches("\\[\\d+,\\d+\\]", optionValue)) {
                 Matcher matcher = Pattern.compile("\\d+").matcher(optionValue);
                 matcher.find();
@@ -128,33 +166,10 @@ public class Main {
         }
     }
 
-    private static void printHelp(Options options) {
-        HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("testClient [options] [server http target with %id]", options);
-    }
-
-    private static Options getCliOptions() {
-        Options options = new Options();
-        options.addOption(Option.builder("rN")
-                .longOpt("rCount")
-                .hasArg().type(int.class)
-                .desc("Number of readers requesting the getAmount(id) method").build());
-        options.addOption(Option.builder("wN")
-                .longOpt("wCount")
-                .hasArg().type(int.class)
-                .desc("Number of readers requesting the addAmount(id,value) method").build());
-        options.addOption(Option.builder("id")
-                .longOpt("idList")
-                .hasArg().type(String.class).argName("idRange like: \"[1,3]\" or list ids: \"1,2,3,4\"")
-                .desc("List or idRange of keys that will be used for testing").build());
-        options.addOption(Option.builder("f")
-                .longOpt("propertyFile")
-                .hasArg().type(String.class)
-                .desc("List or idRange of keys that will be used for testing").build());
-        options.addOption(Option.builder("h")
-                .longOpt("help")
-                .desc("This help").build());
-        return options;
+    private static ExecutorService execute(Runnable runnable, Integer threads) {
+        ExecutorService service = Executors.newFixedThreadPool(threads);
+        for (int i = 0; i < threads; ++i) service.execute(runnable);
+        return service;
     }
 
     private static class readerClient implements Runnable {
