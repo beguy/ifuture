@@ -31,11 +31,11 @@ public class MethodsCallProfilerAspect {
 
     @Around("requestMethod()")
     public Object logWebServiceCall(ProceedingJoinPoint thisJoinPoint) throws Throwable {
-        Object result = thisJoinPoint.proceed();
         if (profilerState.isEnabled()) {
             String methodName = thisJoinPoint.getSignature().toString();
             methodsCallCounters.increment(methodName);
         }
+        Object result = thisJoinPoint.proceed();
         return result;
     }
 }

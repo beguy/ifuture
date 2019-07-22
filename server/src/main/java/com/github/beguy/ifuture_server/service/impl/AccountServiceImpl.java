@@ -6,10 +6,11 @@ import com.github.beguy.ifuture_server.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
 @Service
@@ -31,14 +32,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional(isolation= Isolation.READ_UNCOMMITTED)
+    @Transactional
     @CacheEvict(value = "amounts", key = "#id")
+    // if 2 thread try to save new account with same id
+    @Retryable(value = {SQLException.class}, maxAttempts = 2)
     public void addAmount(Integer id, Long value) {
         Optional<Account> accountOptional = accountRepository.findById(id);
         accountOptional.ifPresent(account -> {
-            account.setAmount(account.getAmount() + value);
-            accountRepository.save(account);
+            accountRepository.addAmount(id, value);
         });
-        accountOptional.orElseGet(()->accountRepository.save(new Account(id, value)));
+        accountOptional.orElseGet(() -> accountRepository.save(new Account(id, value)));
     }
 }

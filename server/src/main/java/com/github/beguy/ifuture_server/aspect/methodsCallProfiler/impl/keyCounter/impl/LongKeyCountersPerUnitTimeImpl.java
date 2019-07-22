@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 @Lazy
@@ -79,7 +80,7 @@ public class LongKeyCountersPerUnitTimeImpl<KeyType> implements KeyCountersPerUn
     @SuppressWarnings("unchecked")
     public KeyType getKey(int keyNumber) {
         if (counters.keySet().size() > keyNumber) {
-            return (KeyType) counters.keySet().toArray()[(int) keyNumber];
+            return (KeyType) counters.keySet().toArray()[keyNumber];
         } else throw new IllegalArgumentException("Not found method with index " + keyNumber);
     }
 
@@ -91,7 +92,7 @@ public class LongKeyCountersPerUnitTimeImpl<KeyType> implements KeyCountersPerUn
     }
 
     private class Counter {
-        private long currentCounter;
+        private AtomicLong currentCounter = new AtomicLong(0);
         private long valueOnStart;
         private long startTime;
         private long valueOnEnd;
@@ -103,7 +104,7 @@ public class LongKeyCountersPerUnitTimeImpl<KeyType> implements KeyCountersPerUn
         }
 
         long getCurrentValue() {
-            return currentCounter;
+            return currentCounter.get();
         }
 
         long getValuePerUnitTime() {
@@ -111,17 +112,17 @@ public class LongKeyCountersPerUnitTimeImpl<KeyType> implements KeyCountersPerUn
         }
 
         void increment() {
-            ++currentCounter;
+            currentCounter.incrementAndGet();
             long currentTime = System.currentTimeMillis();
             if (startTime + unitTimeMillis < currentTime) {
                 startTime = currentTime;
                 valueOnEnd = valueOnStart;
-                valueOnStart = currentCounter;
+                valueOnStart = currentCounter.get();
             }
         }
 
         void reset() {
-            currentCounter = 0L;
+            currentCounter.set(0L);
             valueOnStart = 0L;
             startTime = 0L;
             valueOnEnd = 0L;
