@@ -41,18 +41,60 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--    JDBC Drivers here   -->
+        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.4.199</version>
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Oracle Driver -->
+<!--        <dependency>-->
+<!--            <groupId>com.oracle.jdbc</groupId>-->
+<!--            <artifactId>ojdbc8</artifactId>-->
+<!--            <version>18.3.0.0</version>-->
+<!--        </dependency>-->
+
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.1-901-1.jdbc4</version>
+            <scope>runtime</scope>
         </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>8.0.9-rc</scope>
+        </dependency>
+        <!--    JDBC Drivers end   -->
     </dependencies>
+    <!--  Oracle jdbc repo  -->
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>maven.oracle.com</id>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--            </releases>-->
+<!--            <snapshots>-->
+<!--                <enabled>false</enabled>-->
+<!--            </snapshots>-->
+<!--            <url>https://maven.oracle.com</url>-->
+<!--            <layout>default</layout>-->
+<!--        </repository>-->
+<!--    </repositories>-->
+<!--    <pluginRepositories>-->
+<!--        <pluginRepository>-->
+<!--            <id>maven.oracle.com</id>-->
+<!--            <url>https://maven.oracle.com</url>-->
+<!--        </pluginRepository>-->
+<!--    </pluginRepositories>-->
+
 
     <build>
         <plugins>
