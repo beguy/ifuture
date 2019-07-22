@@ -82,7 +82,7 @@ public class Main {
                 .longOpt("wCount")
                 .hasArg().type(int.class)
                 .desc("Number of readers requesting the addAmount(id,value) method").build());
-        options.addOption(Option.builder("id")
+        options.addOption(Option.builder()
                 .longOpt("idList")
                 .hasArg().type(String.class).argName("\"[1,3]\" or \"1,13,2\"")
                 .desc("List or idRange of keys that will be used for testing like: \"[1,3]\" or list ids: \"1,2,3,4\"").build());
@@ -99,7 +99,7 @@ public class Main {
     private static void parseCli(String[] args, Options options) throws ParseException {
         CommandLineParser parser = new DefaultParser();
         CommandLine line = parser.parse(options, args);
-        Properties fileProperties = null;
+        Properties fileProperties = new Properties();
 
         if (line.hasOption("help")) {
             printHelp(options);
@@ -110,7 +110,6 @@ public class Main {
             String optionValue = line.getOptionValue("file");
             try (FileInputStream fis = new FileInputStream(optionValue)) {
                 log.config("read args from  property file");
-                fileProperties = new Properties();
                 fileProperties.load(fis);
             } catch (Exception e) {
                 log.warning(e.getMessage());
