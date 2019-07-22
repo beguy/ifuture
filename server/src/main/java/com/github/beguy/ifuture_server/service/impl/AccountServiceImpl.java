@@ -37,7 +37,7 @@ public class AccountServiceImpl implements AccountService {
         Optional<Account> accountOptional = accountRepository.findById(id);
         accountOptional.ifPresent(account -> {
             account.setAmount(account.getAmount() + value);
-            accountRepository.saveAndFlush(account);
+            accountRepository.save(account);
         });
         accountOptional.orElseGet(()->accountRepository.save(new Account(id, value)));
     }
