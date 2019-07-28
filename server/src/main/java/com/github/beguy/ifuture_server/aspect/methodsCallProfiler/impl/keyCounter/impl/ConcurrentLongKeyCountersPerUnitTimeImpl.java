@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 
 @Component
 @Lazy
-public class LongKeyCountersPerUnitTimeImpl<KeyType> implements KeyCountersPerUnitTime<KeyType, Long> {
+public class ConcurrentLongKeyCountersPerUnitTimeImpl<KeyType> implements KeyCountersPerUnitTime<KeyType, Long> {
     private Map<KeyType, Counter> counters = new HashMap<>();
     private long commonUnitTimeMillis = 1000; // Milliseconds
 
@@ -92,7 +92,7 @@ public class LongKeyCountersPerUnitTimeImpl<KeyType> implements KeyCountersPerUn
     }
 
     private class Counter {
-        private AtomicLong currentCounter = new AtomicLong(0);
+        private LongAdder currentCounter = new LongAdder();
         private long valueOnStart;
         private long startTime;
         private long valueOnEnd;
@@ -104,7 +104,7 @@ public class LongKeyCountersPerUnitTimeImpl<KeyType> implements KeyCountersPerUn
         }
 
         long getCurrentValue() {
-            return currentCounter.get();
+            return currentCounter.longValue();
         }
 
         long getValuePerUnitTime() {
@@ -112,17 +112,17 @@ public class LongKeyCountersPerUnitTimeImpl<KeyType> implements KeyCountersPerUn
         }
 
         void increment() {
-            currentCounter.incrementAndGet();
+            currentCounter.increment();
             long currentTime = System.currentTimeMillis();
             if (startTime + unitTimeMillis < currentTime) {
                 startTime = currentTime;
                 valueOnEnd = valueOnStart;
-                valueOnStart = currentCounter.get();
+                valueOnStart = currentCounter.longValue();
             }
         }
 
         void reset() {
-            currentCounter.set(0L);
+            currentCounter.reset();
             valueOnStart = 0L;
             startTime = 0L;
             valueOnEnd = 0L;
